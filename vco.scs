@@ -1,0 +1,22 @@
+
+simulator lang=spectre
+parameters vco_freq=1680M
+
+Rload (net44 0 ) resistor r=10 isnoisy=0
+IVCOP (net68 net44) vco amp=1 center_freq=vco_freq vco_gain=100e6
+
+RP_vco_noise (net68 0) resistor r=162 isnoisy=yes
+
+simulatorOptions options reltol=1e-3 vabstol=1e-6 iabstol=1e-12 temp=40.0 \
+    tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 maxnotes=5 maxwarns=5 \
+    digits=5 cols=80 pivrel=1e-3 ckptclock=1800 \
+    sensfile="../psf/sens.output"  
+
+tran tran stop=10n method=gear2only
+pss pss fund=vco_freq harms=10 tstab=10n savetstab=1
+pnoise ( net44 0 ) pnoise start=1 stop=1e9 dec=2
+
+saveOptions options save=all
+
+ahdl_include "vco.va"
+

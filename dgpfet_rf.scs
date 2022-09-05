@@ -1,0 +1,436 @@
+* Path, Component, Release: cmos10lpe/relRF/Spectre/models/dgpfet_rf.scs, 10lpe_models, mod_cmos10lpe
+* CMVC Revision: 1.5 09/05/12 10:52:50
+***********************************************************************
+*									       
+*   Licensed Materials - Property of CHARTERED				      
+*									      
+*   CHARTERED CONFIDENTIAL						      
+* 
+************************************************************************
+inline subckt dgpfet_rf (1 2 3 4 )
+parameters 
++ w=0u l=0u as=0p ad=0p ps=0u pd=0u
++ nrd=0 nrs=0 dtemp=0 nf=1
++ panw1=0p panw2=0p panw3=0p panw4=0p panw5=0p
++ panw6=0p panw7=0p panw8=0p panw9=0p panw10=0p
++ sa=0 sb=0 sd=0 ptwell=1 par=1 psw_acv_sign=1
++ plnest=1 plorient=1 pld200=1 
++ pdevdops=1 pdevlgeos=1 pdevwgeos=1
++ p_vta=0 pccrit=1 cnr_switch=0 u0_mult=1
++ rgatemod=3 rbodymod=1 ngcon=2
++ ring=1 cwire=1 rf_rsub=1 
++ ca_dist=0.110u pcext=0.14u gateca=2
+parameters
+******local dist***********
++    aclv_ran = aclv_ran_fet
++    acv_uncorr = psw_acv_sign *cnr_acv_uncorr
++    acwv_ran = acwv_ran_fet
++    mc_cnr_rnd = mc_cnr_round 
+* Chip Mean Length Calculations
+parameters
++    pccritf= pccrit*pccrit_global
++    max_dev = (l >= 0.11e-6)
++    mid_dev = (l > 0.06e-6) && (l < 0.11e-6)
++    min_dev = (l <= 0.06e-6)
++    lchiptol= (0.011e-6*(max_dev))+(0.005e-6*(max_dev==0))
+* ACV Length Calculations
++    aclv_fet_ni   = 0.0034e-6*(min_dev*pccritf) + 0.0059e-6*((mid_dev)||(min_dev*(1-pccritf))) + (0.0107e-6*max_dev)
++    aclv_fet_or   = 0.0014e-6*(min_dev*pccritf) + 0.002e-6*((mid_dev)||(min_dev*(1-pccritf))) + (0.002e-6*max_dev)
++    aclv_fet_dist = 0.0028e-6*(min_dev*pccritf) + 0.004e-6*((mid_dev)||(min_dev*(1-pccritf))) + (0.004e-6*max_dev)
++    aclv_fet_ran  = (0.002e-6*(min_dev*pccritf) + 0.003e-6*((mid_dev)||(min_dev*(1-pccritf))) +  (0.003e-6*max_dev))*grs
++    aclv_fet_nif   = aclv_fet_ni  *((mc_sw) + abs(cnr_acv_corr)*(1-mc_sw)) 
++    aclv_fet_orf   = aclv_fet_or  *((mc_sw) + abs(cnr_acv_corr)*(1-mc_sw)) 
++    aclv_fet_distf = aclv_fet_dist*((mc_sw) + abs(cnr_acv_corr)*(1-mc_sw))
++    aclv_fet_ranf  = aclv_fet_ran *((mc_sw) + acv_uncorr*(1-mc_sw))
+*************  ACV Calculations  **********
+
++    fet_aclv_nest = ((pc_nest_f == 1)*aclv_nest)+((pc_nest_f == 2)*(pc_nest_add/(2*(aclv_fet_ni))))
++    fet_aclv_iso  = (((pc_nest_f == 1)||(pc_nest_f == 3))*aclv_iso)+((pc_nest_f == 2)*(-pc_nest_add/(2*(aclv_fet_ni))))
++    fet_aclv_v    = ((pc_orient_f == 1)*aclv_v)+((pc_orient_f == 2)*(pc_orient_add/(2*(aclv_fet_or))))
++    fet_aclv_h    = (((pc_orient_f == 1)||(pc_orient_f == 3))*aclv_h)+((pc_orient_f == 2)*(-pc_orient_add/(2*(aclv_fet_or))))
++    fet_aclv_in   = ((pc_dist_f == 1)*aclv_in)+((pc_dist_f == 2)*(-pc_dist_add/(2*(aclv_fet_dist))))
++    fet_aclv_out  = (((pc_dist_f == 1)||(pc_dist_f == 3))*aclv_out)+((pc_dist_f == 2)*(pc_dist_add/(2*(aclv_fet_dist))))
++    aclv_factor_1 = (aclv_fet_nif*aclv_fet_nif)*((pc_nest_f == 1)||(pc_nest_f == 3))*(plnest != 0)
++    aclv_factor_2 = (aclv_fet_orf*aclv_fet_orf)*((pc_orient_f == 1) ||(pc_orient_f == 3))*(plorient != 0)
++    aclv_factor_3 = (aclv_fet_distf*aclv_fet_distf)*((pc_dist_f == 1)||(pc_dist_f == 3))*(pld200 != 0)
++    aclv_factor_4 = (aclv_fet_ranf*aclv_fet_ranf)
++    aclv_factor_5 = sqrt(aclv_factor_1 + aclv_factor_2 + aclv_factor_3 + aclv_factor_4)
++    aclv_factor_15 = ((cnr_acv_corr==0)? 0:((cnr_acv_corr>0)? 1:-1))*sqrt(aclv_factor_1 + aclv_factor_2 + aclv_factor_3)+(aclv_fet_ranf)
++    aclv_factor_6 = (aclv_fet_nif)*((pc_nest_f == 1)||(pc_nest_f == 3))*(plnest != 0)
++    aclv_factor_7 = (aclv_fet_orf)*((pc_orient_f == 1)||(pc_orient_f == 3))*(plorient != 0)
++    aclv_factor_8 = (aclv_fet_distf)*((pc_dist_f == 1)||(pc_dist_f == 3))*(pld200 != 0)
++    aclv_factor_9 = (aclv_factor_6+aclv_factor_7+aclv_factor_8+aclv_fet_ranf)
++    aclv_factor   = ((aclv_factor_9 == 0)+aclv_factor_5)/((aclv_factor_9 == 0)+aclv_factor_9)
+* calculate the rss factor*/
++    p_plnest  = a_plnest
++    sel_plnest= ((plnest == 1)||((mc_sw == 1)*(plnest != 2)*(p_plnest*plnest)>0))
++    p_plorient  = a_plorient
++    sel_plorient= ((plorient == 1)||((mc_sw == 1)*(plorient != 2)*(p_plorient*plorient)>0))
++    p_pld200    = a_pld200
++    sel_pldist= ((pld200 == 1)||((mc_sw == 1)*(pld200 != 2)*(p_pld200*pld200)>0))
++    aclv_ni_sws = (mc_sw+((mc_fet_mm_f != 1)&&(pc_nest == 2))/aclv_factor + (cnr_acv_corr)*(1-mc_fet_mm_f)*(pc_nest != 2))
++    aclv_or_sws = (mc_sw +((mc_fet_mm_f != 1)&&(pc_orient == 2))/aclv_factor +(cnr_acv_corr)*(1-mc_fet_mm_f)*(pc_orient != 2))
++    aclv_dist_sws = (mc_sw+((mc_fet_mm_f != 1)&&(pc_dist == 2))/aclv_factor + (cnr_acv_corr)*(1-mc_fet_mm_f)*(pc_dist != 2))
++    aclv_ni  = (((fet_aclv_nest*(sel_plnest))+(fet_aclv_iso*(1-(sel_plnest))))*(plnest == -1)*(pc_nest != 2)+(fet_aclv_nest *(plnest == 1))+ (fet_aclv_iso * (plnest == 2)))*aclv_ni_sws
++    aclv_or  = (((fet_aclv_v*(sel_plorient))+(fet_aclv_h*(1-(sel_plorient))))*(plorient == -1)*(pc_orient != 2)+(fet_aclv_v *(plorient == 1))+ (fet_aclv_h * (plorient == 2)))*aclv_or_sws
++    aclv_dist = (((fet_aclv_in*(sel_pldist))+(fet_aclv_out*(1-(sel_pldist))))*(pld200 == -1)*(pc_dist != 2)+(fet_aclv_in *(pld200 == 1))+ (fet_aclv_out * (pld200 == 2)))*aclv_dist_sws
++    xc_xl_0 = ((aclv_ni*aclv_fet_ni*(pc_nest == 2))+(aclv_or*aclv_fet_or*(pc_orient == 2))+(aclv_dist*aclv_fet_dist*(pc_dist == 2)))
++    xc_xl_1 = ((aclv_ni*aclv_fet_ni)+(aclv_or*aclv_fet_or)+(aclv_dist*aclv_fet_dist))*(mc_sw != 0)
++    xc_xl_2 = ((mc_sw == 0) + (aclv_fet_ran*mc_fet_mm_f*aclv_ran)+(aclv_factor_9*(mc_global == 2)))
++    xx_xl_3 = (mc_fet_mm_f+(aclv_factor*(1-(mc_fet_mm_f))*(mc_sw != 0))+aclv_factor_15*(mc_sw == 0))
++    xx_xl_4 = ((mc_global == 2)*(-x_xl_dgpfet)*(mc_sw)+(mc_global != 2))
++    xc_xl_fet=((xc_xl_1+xc_xl_2)*xx_xl_3)*xx_xl_4+xc_xl_0
+******Final XL calculation *******
++    xl_dgpfet = (xl_dgpfet_fc -(((w/nf)<=1.02e-6)&&(l<=0.3e-6))*0.01e-06 - xc_xl_fet*fet_geo_mm*pdevlgeos + (x_xl_dgpfet*lchiptol))
++    xc_xw_1 = (((acv_uncorr*(mc_sw == 0))+(acwv_ran*(mc_fet_mm_f))+(mc_global == 2))*acwv_fet_ran)
++    xx_xw_2 = ((mc_global == 2)*(-delrx)*(mc_sw)+(mc_global != 2))
++    xc_xw_dgpfet = xc_xw_1*xx_xw_2
++    xw_dgpfet = xc_xw_dgpfet*fet_geo_mm*pdevwgeos+xw_dgpfet_f
++    dlc_dgpfet = lcov_dgpfet + 5.24e-008
+****************************************************************
+* Band parameters
++    band1 = 1.5e-07
++    band2 = 3.25e-07
++    band3 = 3.75e-07
++    band4 = 4.25e-07
++    band5 = 4.5e-07
++    band6 = 5.75e-07
++    band7 = 7.5e-07
++    band8 = 9.5e-07
++    band9 = 1.1e-06
++    band10 = 1.5e-06
+*********************** NWELL PROX DEFAULT ****************************
++    p_logic = (((panw1 != 0.0) + (panw2 != 0.0) + (panw3 != 0.0) + (panw4 != 0.0) + (panw5 != 0.0) + (panw6 != 0.0) + (panw7 != 0.0) + (panw8 != 0.0) + (panw9 != 0.0) + (panw10 != 0.0)) >= 1)
++    proxfinal = (((gwells==2) && (p_logic==0)) ? 1 : 0 )
++    panw1f =  ((proxfinal==0)*panw1)* (gwells > 0)
++    panw2f = (((proxfinal==0)*panw2)+(((band2-2*band1)<(w/nf))*l*(band2-2*band1)*nf*(proxfinal==1)))*(gwells > 0)
++    panw3f = (((proxfinal==0)*panw3)+(((band3-2*band1)<(w/nf))*l*(band3-band2)*nf*(proxfinal==1)))*(gwells > 0)
++    panw4f = (((proxfinal==0)*panw4)+(((band4-2*band1)<(w/nf))*l*(band4-band3)*nf*(proxfinal==1)))*(gwells > 0)
++    panw5f = (((proxfinal==0)*panw5)+(((band5-2*band1)<(w/nf))*l*(band5-band4)*nf*(proxfinal==1)))*(gwells > 0)
++    panw6f = (((proxfinal==0)*panw6)+(((band6-2*band1)<(w/nf))*l*(band6-band5)*nf*(proxfinal==1))) * (gwells > 0)
++    panw7f = (((proxfinal==0)*panw7)+(((band7-2*band1)<(w/nf))*l*(band7-band6)*nf*(proxfinal==1))) * (gwells > 0)
++    panw8f = (((proxfinal==0)*panw8)+(((band8-2*band1)<(w/nf))*l*(band8-band7)*nf*(proxfinal==1))) * (gwells > 0)
++    panw9f = (((proxfinal==0)*panw9)+(((band9-2*band1)<(w/nf))*l*(band9-band8)*nf*(proxfinal==1))) * (gwells > 0)
++    panw10f = (((proxfinal==0)*panw10)+(((band10-2*band1)<(w/nf))*l*(band10-band9)*nf*(proxfinal==1)))*(gwells > 0)
+*********Device Parameters ********
++    proxpre_tw = 0.0832
++    proxlen_tw = 0.823e-06
++    proxminlen_tw = 0.221e-06
++    proxpre_mid = (0.0832 + proxpre_tw)/2
++    proxlen_mid = (0.823e-06 + proxlen_tw)/2
++    proxminlen_mid = (0.221e-06 + proxminlen_tw)/2
++    proxpre= (0.0832*(ptwell==0))+(proxpre_tw * (ptwell==1))+(proxpre_mid * (ptwell == 2))
++    proxlen= (0.823e-06*(ptwell==0))+(proxlen_tw * (ptwell==1))+(proxlen_mid * (ptwell == 2))
++    proxminlen= (0.221e-06*(ptwell==0))+(proxminlen_tw * (ptwell==1))+(proxminlen_mid * (ptwell == 2))
+******************************************************************
++    nw1b1   = panw1f * exp(-pow(((band1-proxminlen)/proxlen),2))
++    nw2b2   = panw2f * exp(-pow(((band2-proxminlen)/proxlen),2))
++    nw3b3   = panw3f * exp(-pow(((band3-proxminlen)/proxlen),2))
++    nw4b4   = panw4f * exp(-pow(((band4-proxminlen)/proxlen),2))
++    nw5b5   = panw5f * exp(-pow(((band5-proxminlen)/proxlen),2))
++    nw6b6   = panw6f * exp(-pow(((band6-proxminlen)/proxlen),2))
++    nw7b7   = panw7f * exp(-pow(((band7-proxminlen)/proxlen),2))
++    nw8b8   = panw8f * exp(-pow(((band8-proxminlen)/proxlen),2))
++    nw9b9   = panw9f * exp(-pow(((band9-proxminlen)/proxlen),2))
++    nw10b10 = panw10f * exp(-pow(((band10-proxminlen)/proxlen),2))
++    lenratio = 1 + (atan(1.0 * (l/0.25e-06)-1)/3.14)
++    prox_term1 = lenratio*proxpre/(l*w)*(nw1b1+nw2b2+nw3b3+nw4b4+nw5b5)
++    prox_term2 = lenratio*proxpre/(l*w)*(nw6b6+nw7b7+nw8b8+nw9b9+nw10b10)
++    prox_term  = prox_term1 + prox_term2
+*********************STI Stress Model**********************************
++    sti_logic = (((sa != 0.0) + (sb != 0.0) + (sd != 0.0)) >=1)
++    sa_f = (sti_logic==0)*p_sti + sa*(sti_logic==1)*(gstis>0)
++    sb_f = (sti_logic==0)*p_sti + sb*(sti_logic==1)*(gstis>0)
++    sd_f = sd*(sti_logic==1)*(gstis>0)
+*********************************************************
+******************** Statistical 1/f noise model *********************
++    dnoin = ((mc_sw==1)*(mc_dnoin) + (mc_sw==0)* (-cnr_noip/3))
+****  noi_scale = noistd_xfet-noifactor_xfet-min(log(sqrt(w*l*par/noiarea_xfet)),0) ****
++    noi_scale = 0-0.7*min(log(sqrt(w*l*par/100e-12)),0)
++    noia_mul = exp(dnoin*noi_scale)
++    noib_mul = exp(dnoin*noi_scale)
++    noic_mul = exp(dnoin*noi_scale)
++    noia_dgpfet = 5.74e041*noia_mul
++    noib_dgpfet = 2.54e025*noib_mul
++    noic_dgpfet = 1.65e009*noic_mul
+*************Mismatch parameters**********************************
++    mm_dop_rss = 0.83
++    p_leff = l + xl_dgpfet
++    p_sqrtarea = sqrt((p_leff)*w*par)
+********** Length adjustment multiplier for Mismatch *************
+******* p_long_adj = sqrt(1+mlength_xfet*p_leff*1e+06) ***********
+*Invalid mlength in Tech_Data_dgpfet 
++    p_long_adj = sqrt(1+0.0*p_leff*1e+06)
+****************************************************************
++    mm_on = ((fet_dop_mm == 1) && (pdevdops == 1)) 
++    mm_global = 3* acv_uncorr * (mm_dop_rss)*(mc_sw == 0)
++    mm_fet    = (dvt_dgpfet * 3)   * (mm_dop_rss) *(mc_global == 2)*(mc_sw == 1)
++    mm_local  = (mc_global != 2)*(mc_sw == 1)
++    u0matchd1  = u0matchd1a
++    u0matchd2  = u0matchd2a
++    u01 = (0.7071 * 0.00112 *1e-06/ p_sqrtarea)
++    u02 = 0.7071 * 0.0 *1e-09  / (sqrt(p_leff) * p_sqrtarea)
++    u01_loc = u01 * u0matchd1 * mm_local * mm_on
++    u02_loc = u02 * u0matchd2 * mm_local * mm_on
++    u01_fet = u01 * mm_fet * mm_on
++    u02_fet = u02 * mm_fet * mm_on
++    u01_glo = -(u01) * mm_global * mm_on
++    u02_glo = -(u02) * mm_global * mm_on
++    u0mult = (1 - (u01_loc + u02_loc + u01_fet +  u02_fet + u01_glo + u02_glo))
++    u0_dgpfet_f = u0_dgpfet * u0mult *u0_mult 
++    lu0_dgpfet = ((mulu0_dgpfet * (66))+ (66))*u0mult *u0_mult
++    wu0_dgpfet = ((mulu0_dgpfet * (9))+ (9))*u0mult *u0_mult
++    rdswmult = 1.0/u0mult
++    rdsw_dgpfet_f = rdsw_dgpfet * rdswmult
++    vtmatchd1  = vtmatchd1a
++    vtmatchd2  = vtmatchd2a
++    vt1 = (0.7071 * 0.0082 *1e-06/ p_sqrtarea)
++    vt2 = 0.7071 * 0.0 *1e-09  / (sqrt(p_leff) * p_sqrtarea)
++    vt1_loc = vt1 * vtmatchd1 * mm_local * mm_on
++    vt2_loc = vt2 * vtmatchd2 * mm_local * mm_on
++    vt1_fet = vt1 * mm_fet * mm_on
++    vt2_fet = vt2 * mm_fet * mm_on
++    vt1_glo = -(vt1) * mm_global * mm_on
++    vt2_glo = -(vt2) * mm_global * mm_on
++    vt0adder = (vt1_loc + vt1_fet+ vt1_glo)*p_long_adj + (vt2_loc + vt2_fet + vt2_glo)
++    cv_cnr_dgpfet = 1.5e-9
++    cf_cnr_dgpfet = 0
++    cnr_rnd_skew =  (((mc_cnr_rnd)*mc_sw)+ (acv_uncorr * (cnr_rnd_rss)*(mc_sw == 0)))*fet_cnr_sw
++    vth0_cnr_rnd   = (sqrt(cnr_switch+1e-40)*(cv_cnr_dgpfet/sqrt(l*w))* cnr_rnd_skew)
++    cf_dgpfet = (sqrt(cnr_switch+1e-40)*(cf_cnr_dgpfet/(sqrt(l)*pow(w,1.5)))*cnr_rnd_skew)
++    p_vttotalvar = vth0_dgpfet-(vt0adder+prox_term)+ vth0_cnr_rnd + p_vta
+
+**********************************************************************************
+******** RF section **************
+parameters pdt= temp - 25.0 + dtemp
+parameters ppctcoef = (1.0 + pctcr * pdt)
+
+parameters pcrs_dgpfet = ppcrs_f 
+parameters rshg_dgpfet = pcrs_dgpfet * ppctcoef
+
+parameters xrcrg1_dgpfet=12 * (1.0 - 0.21 * exp(-0.83*l*1e6))
+parameters xrcrg2_dgpfet=1.3 * exp(-0.9*l*1e6)
+
+parameters xgw_dgpfet = pcext 
+parameters xgl_dgpfet = - xl_dgpfet
+
+**** effective Rg
+parameters ngcfac = ngcon > 1 ? 1 : 1.45
+parameters rgeff = ngcfac * (((860/2)/nf)/((w*1e6/nf)*(1.0 + 0.4*(l*1e6 - 0.05)/0.05)) + 0.08*l*nf*1e6 + 0.7)
+rgp (22 2) resistor r=rgeff
+******************************************************************************
+**********wiring capacitance model
+******************************************************************************
+**** note that this only accounts for pcell parasitics within the active RX edge,
+**** up to M1 level (including M1). All other parasitics are extracted
+**** from the parasitic extraction tool. *******
+
+*** Layout assumption:
+***   See MRG for PCELL layout definition
+
+*** here in nca calculation we add 1e-3 to compensate possible small err in floating point
+*** calculation, in case the width fits in exactly integer number of CAs.
+
+parameters nca = int( ((w/nf-2*0.075u-0.09u) / (0.09u+ca_dist)) + 1e-3) + 1
+parameters pcell_pcca_space = 0.055u 
+parameters pcell_pcpc_space = 0.20u
+parameters pcell_pccascale = (0.075u/(pcell_pcca_space+0.02u))**2
+parameters pcell_pccascale_sd = pcell_pccascale
+
+parameters pcell_pccad  = 0.007f * (1.54 - 0.6/(l*1e6+1)**2) * pcell_pccascale
+parameters pcell_pccas  = 0.006f * (1.54 - 0.6/(l*1e6+1)**2) * pcell_pccascale
+parameters pcell_pcm1d  = (0.0399e-9 - (0.00802e-9/(l*1e6+0.513)**2)) *0.3* pcell_pccascale
+parameters pcell_pcm1s  = (0.0511e-9 - (0.00398e-9/(l*1e6+0.373)**2)) *0.3* pcell_pccascale
+parameters pcell_cacasd  = (0.00051f/(l*1e6+0.2)**1.7) * pcell_pccascale_sd
+parameters pcell_m1m1sd = (0.0087e-9/(l*1e6+0.2)**1.7) * pcell_pccascale_sd
+
+cwiredg (1 22) capacitor c=cwire * ((w * pcell_pcm1d) + (nca * nf * pcell_pccad))
+cwiresg (3 22) capacitor c=cwire * ((w * pcell_pcm1s) + (nca * nf * pcell_pccas))
+cwireds (1 3) capacitor c=cwire * ((w * pcell_m1m1sd) + (nca * nf * pcell_cacasd))
+
+*********** end parasitic not included in the previously released model
+parameters pcell_pcsx  = 0.169f * 0.3      // fF per um per ngcon
+parameters pcell_gsend = 0.074f * 0.5 * (0.105e-6/xgw_dgpfet)     // fF per (nf-1)*pcpc_space_in_um**ngcon
+parameters pcell_gdend = 0.074f * 0.5 * (0.105e-6/xgw_dgpfet)
+
+cpcsx (4 22) capacitor c=cwire * ( nf * ngcon * (l*1e6+pcell_pcpc_space*1e6) * pcell_pcsx)
+cgsend (3 22) capacitor c=cwire * ((nf-1) * ngcon * pcell_pcpc_space*1e6 * pcell_gsend)
+cgdend (1 22) capacitor c=cwire * ((nf-1) * ngcon * pcell_pcpc_space*1e6 * pcell_gdend)
+
+*****************************************************************
+* substrate resistance scaling equation
+*****************************************************************
+parameters
++ pnwtcoef= (1.0 + nwtcr * pdt)
++ ppwtcoef= (1.0 + pwtcr * pdt)
++ psxtcoef= (1.0 + subtcr * pdt)
++ n_res= nwrs_f * pnwtcoef
+
+*****************************************************************
+* substrate resistance default multiplier for no ring option 
+* x3.5 if ring==0 and rf_rsub==1, otherwise use rf_rsub
+*****************************************************************
++ rf_rsub_default = ring==0? 3.5 : rf_rsub
++ rf_rsub_actual = rf_rsub==1? rf_rsub_default : rf_rsub
++ rsubc45 = rf_rsub_actual * n_res
++ rsubc123 = rf_rsub_actual * n_res
++ rbps1_dgpfet=0.2990e-6
++ rbpd1_dgpfet=0.2990e-6
++ lo_dgpfet=3e-8
+
++ rbpb1_dgpfet = 7.878* rsubc123
++ rbsb1_dgpfet_even = 1.159* rsubc123
++ rbdb1_dgpfet_even = 3.654* rsubc123
++ rbsb1_dgpfet_odd = 1.295* rsubc123
++ rbdb1_dgpfet_odd = 1.295* rsubc123
+
++ rbpbnf_dgpfet = -0.6396
++ rbsbnf_dgpfet_even = -0.38
++ rbdbnf_dgpfet_even = -0.5747
++ rbsbnf_dgpfet_odd = -0.3114
++ rbdbnf_dgpfet_odd = -0.3114
+
++ rbpbl_dgpfet = -2
++ rbsbl_dgpfet_even = 0.0989
++ rbdbl_dgpfet_even = 0.2251
++ rbsbl_dgpfet_odd = 0.1358
++ rbdbl_dgpfet_odd = 0.1358
+
++ rbpbw_dgpfet = -0.5459
++ rbsbw_dgpfet_even = -0.7385
++ rbdbw_dgpfet_even = -0.5683
++ rbsbw_dgpfet_odd = -0.7299
++ rbdbw_dgpfet_odd = -0.7299
+
++ rbps_dgpfet = rbps1_dgpfet * rsubc45 / (w / nf) * log((l+0.20e-6)/lo_dgpfet) / nf
++ rbpd_dgpfet = rbpd1_dgpfet * rsubc45 / (w / nf) * log((l+0.20e-6)/lo_dgpfet) / nf
++ rbpb_dgpfet = rbpb1_dgpfet * (nf**rbpbnf_dgpfet) * ((l/0.05e-6)**rbpbl_dgpfet) * ((w/nf/1.5e-6)**rbpbw_dgpfet)
++ rbsb_dgpfet_even = rbsb1_dgpfet_even * (nf**rbsbnf_dgpfet_even) * ((l/0.05e-6)**rbsbl_dgpfet_even) * ((w/nf/1.5e-6)**rbsbw_dgpfet_even)
++ rbdb_dgpfet_even = rbdb1_dgpfet_even * (nf**rbdbnf_dgpfet_even) * ((l/0.05e-6)**rbdbl_dgpfet_even) * ((w/nf/1.5e-6)**rbdbw_dgpfet_even)
++ rbsb_dgpfet_odd  = rbsb1_dgpfet_odd  * (nf**rbsbnf_dgpfet_odd)  * ((l/0.05e-6)**rbsbl_dgpfet_odd)  * ((w/nf/1.5e-6)**rbsbw_dgpfet_odd)
++ rbdb_dgpfet_odd  = rbdb1_dgpfet_odd  * (nf**rbdbnf_dgpfet_odd)  * ((l/0.05e-6)**rbdbl_dgpfet_odd)  * ((w/nf/1.5e-6)**rbdbw_dgpfet_odd)
++ rbsb_dgpfet = int(nf/2)*2 == nf ? rbsb_dgpfet_even : rbsb_dgpfet_odd
++ rbdb_dgpfet = int(nf/2)*2 == nf ? rbdb_dgpfet_even : rbdb_dgpfet_odd
+********************************************************************
+dgpfet_rf (1 22 3 4) dgpfet_rf  w=w l=l ad=ad as=as pd=pd ps=ps nrd=nrd nrs=nrs nf=nf trise=dtemp sa=sa_f sb=sb_f sd=sd_f
+**********************************************************
+* dgpfet model
+**********************************************************
+model dgpfet_rf bsim4 type=p
++ fc=0 fcsw=0 updatelevel=2
++ a0=0.85                a1=0                     a2=1                     
++ acde=0.75392           acnqsmod=0               af=1                     
++ agidl=0.0008           ags=0.2                  aigbacc=0.43             
++ aigbinv=0.35           alpha0=1e-007            alpha1=0.1               
++ at=0                   b0=0                     b1=0                     
++ beta0=20               bgidl=7.5e009            bigbacc=0.054            
++ bigbinv=0.03           bigc=0.024               bigsd=0.024              
++ binunit=1              bvd=10                   bvs=10                   
++ capmod=2               cdsc=0.0002              cdscb=0                  
++ cdscd=-0.0002          cgbo=1e-012              cgidl=20                 
++ cigbacc=0.075          cigbinv=0.006            cigc=0.03                
++ cigsd=0.03             cit=0                    ckappad=3                
++ ckappas=3              clc=0                    cle=0.6                  
++ delta=0.005            diomod=1                 dlcig=2e-008             
++ dmcg=1.05e-007         dmci=7.5e-008            dmdg=9e-008              
++ drout=0.5              dsub=0.645               dvt0=43.6                
++ dvt0w=0.02             dvt1=0.5                 dvt1w=100000             
++ dvt2=-0.0052           dvt2w=0                  dvtp0=0                  
++ dvtp1=0                dwb=-3e-009              dwc=-4e-9                
++ dwg=-3e-009            dwj=0                    ef=1.13                  
++ egidl=-2               eigbinv=1.1              em=41000000              
++ epsrox=3.9             eta0=5.8                 etab=-0.6                
++ eu=1                   fnoimod=1                fprout=0                 
++ geomod=0               igbmod=0                 igcmod=0                 
++ ijthdfwd=0.1           ijthdrev=0.1             ijthsfwd=0.1             
++ ijthsrev=0.1           jsd=2e-007               jss=2e-007               
++ jswd=4e-014            jswgd=4e-014             jswgs=4e-014             
++ jsws=4e-014            jtsd=0                   jtss=0                   
++ jtsswd=0               jtsswgd=0                jtsswgs=0                
++ jtssws=0               k1=0.70177               k2=-0.085                
++ k3=-1                  k3b=1.6                  keta=-0.01               
++ kf=3e-028              kt1=-0.3                 kt1l=1.5e-008            
++ kt2=-0.025             ku0=0.55e-008            kvsat=-0.3               
++ kvth0=-1.2e-009        lags=0.32                lambda=0                 
++ lc=5e-009              ldelta=0.01              lk1=-0.02                
++ lk2=0.0091             lk3b=-0.56               lketa=-0.002             
++ lku0=0                 lkvth0=0                 ll=0                     
++ lln=1                  llodku0=1                llodvth=1                
++ lmax=0.0001            lmin=2.8e-007            lmoin=4.5                
++ lnoff=0.25             lodeta0=1                lodk2=1                  
++ lpe0=0                 lpeb=0                   lphin=0.02               
++ lua=7e-010             lub=4e-019               lw=0                     
++ lwl=0                  lwn=1                    minv=-0.47               
++ mjd=0.31               mjs=0.31                 mjswd=0.06               
++ mjswgd=0.86            mjswgs=0.86              mjsws=0.06               
++ mobmod=0               moin=5                   ndep=2.94e017            
++ nfactor=0.903          ngate=5e020              nigbacc=1                
++ nigbinv=3              nigc=1                   njd=1.03                 
++ njs=1.03               njts=20                  njtssw=20                
++ njtsswg=20             noff=1.9                 nsd=1e020                
++ ntnoi=1                ntox=1                   pags=-0.11               
++ paramchk=0             pbd=0.7                  pbs=0.7                  
++ pbswd=1                pbswgd=1.5               pbswgs=1.5               
++ pbsws=1                pclm=0.65                pdiblc1=0                
++ pdiblc2=5e-005         pdiblcb=0.0015           pdits=0                  
++ pditsd=0               pditsl=1                 permod=1                 
++ phin=0                 pigcd=1                  pku0=0                   
++ pkvth0=0               poxedge=1                prt=-0.002               
++ prwb=-0.3              prwg=0.2                 pscbe1=8e008             
++ pscbe2=5e-006          pua=-4.5e-011            puc=-2.5e-011            
++ pvag=1.8408            rdsmod=0                 rdswmin=50               
++ rsh=9                  saref=0.8e-006           sbref=0.8e-006           
++ steta0=0               stk2=0                   tcj=0.0008               
++ tcjsw=0.00037          tcjswg=0.0008            tempmod=1                
++ tku0=0                 tnjts=0                  tnjtssw=0                
++ tnjtsswg=0             tnoimod=0                tnom=25                  
++ toxm=6e-009            toxref=3e-009            tpb=0.00161              
++ tpbsw=0.0004           tpbswg=0.001             trnqsmod=0               
++ ua=2.89e-009           ua1=-0.0015              ub=5.1e-020              
++ ub1=0                  uc=0                     uc1=0                    
++ ud=0                   ute=-1.3                 version=4.5              
++ voff=-0.12             voffcv=-0.08             voffl=-2e-009            
++ vsat=120000            vtl=0                    vtsd=10                  
++ vtss=10                vtsswd=10                vtsswgd=10               
++ vtsswgs=10             vtssws=10                w0=0                     
++ wint=0                 wku0=0                   wkvth0=0                 
++ wl=0                   wln=1                    wlod=0                   
++ wlodku0=1              wlodvth=1                wmax=1                   
++ wmin=4e-007            wpemod=0                 wr=1                     
++ wua=-3e-011            ww=0                     wwl=0                    
++ wwn=1                  xj=1e-007                xjbvd=1                  
++ xjbvs=1                xn=3                     xpart=0                  
++ xtid=3                 xtis=3                   xtsd=0.02                
++ xtss=0.02              xtsswd=0.02              xtsswgd=0.02             
++ xtsswgs=0.02           xtssws=0.02              
+
+***** Statistical & Parameterized parameters ********
++ rgatemod=rgatemod         rbodymod=rbodymod         ngcon=ngcon              
++ dlc=dlc_dgpfet            lint=lint_dgpfet          toxp=toxp_dgpfet         
++ aigc=aigc_dgpfet          aigsd=aigsd_dgpfet        cf=cf_dgpfet              
++ cgdl=cgdl_dgpfet          cgdo=cgdo_dgpfet          cgsl=cgsl_dgpfet          
++ cgso=cgso_dgpfet          cjd=cjd_dgpfet            cjs=cjs_dgpfet            
++ cjswd=cjswd_dgpfet        cjswgd=cjswgd_dgpfet      cjswgs=cjswgs_dgpfet      
++ cjsws=cjsws_dgpfet        lu0=lu0_dgpfet            lvth0=lvth0_dgpfet        
++ noia=noia_dgpfet          noib=noib_dgpfet          noic=noic_dgpfet          
++ pvth0=pvth0_dgpfet        rbdb=rbdb_dgpfet          rbpb=rbpb_dgpfet          
++ rbpd=rbpd_dgpfet          rbps=rbps_dgpfet          rbsb=rbsb_dgpfet          
++ rdsw=rdsw_dgpfet_f        rshg=rshg_dgpfet          
++ toxe=toxe_dgpfet          u0=u0_dgpfet_f            vth0=p_vttotalvar         
++ wu0=wu0_dgpfet            xgl=xgl_dgpfet            xgw=xgw_dgpfet            
++ xl=xl_dgpfet              xrcrg1=xrcrg1_dgpfet      xrcrg2=xrcrg2_dgpfet      
++ xw=xw_dgpfet              
+************************************** 
+************************************** 
+*                                      
+* age model parameters                 
+*                                      
+*relxpert: .agemodel dgpfet agelevel= 
+*relxpert: +aforward= mforward= v0forward= nforward= 
+*relxpert: +areverse= mreverse= v0reverse= nreverse= 
+*relxpert: +Age= 
+ 
+*relxpert: .agemodel dgpfet agelevel= 
+*relxpert: +anbti=     dhnbti=   bnbti=      alphanbti= nnbti= 
+*relxpert: +Age= 
+ends dgpfet_rf

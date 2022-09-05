@@ -1,0 +1,352 @@
+// Generated for: spectre
+// Generated on: Jan 19 18:25:43 2021
+// Design library name: RFIC
+// Design cell name: LNA_IQ_Mixer_testbench
+// Design view name: schematic
+simulator lang=spectre
+global 0
+parameters prf=-40 frf=2.401G
+
+include "models/spectre/ms013_io33_v2p6_7p_spe.lib" section=tt
+include "models/spectre/ms013_io33_v2p6_7p_spe.lib" section=res_tt
+include "models/spectre/ms013_io33_v2p6_7p_spe.lib" section=dio_tt
+include "models/spectre/ms013_io33_v2p6_7p_spe.lib" section=bjt_tt
+include "models/spectre/ms013_io33_v2p6_7p_spe.lib" section=mim_tt
+include "models/spectre/ms013_io33_v2p6_7p_spe.lib" section=var_tt
+include "models/spectre/ms013_io33_v2p6_7p_spe.lib" section=mom_tt
+include "models/spectre/ms013_io33_v2p6_7p_res_spe.ckt"
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=mos_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=mim_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=res_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=mom_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=var_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=spirind_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=diffind_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=3tdiffind_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=rf_ind_spi_mf_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=rf_ind_spi_mf_psub_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=rf_3Tdiff_1talpa_tt
+include "models/spectre/ms013_io33_rf_v1p9_spe.lib" section=rf_3Tdiff_1talpa_psub_tt
+
+// Library name: smic13mmrf_1233
+// Cell name: rnposab_3t_ckt
+// View name: schematic
+subckt rnposab_3t_ckt_pcell2460 B MINUS PLUS
+parameters segL=10u segW=280n mismod_res=1
+    R0 (PLUS MINUS B) rnposab_3t_ckt m=1 l=segL w=segW \
+        mismod_res=mismod_res
+ends rnposab_3t_ckt_pcell2460
+// End of subcircuit definition.
+
+// Library name: smic13mmrf_1233
+// Cell name: rpposab_ckt_rf_3t
+// View name: schematic
+subckt rpposab_ckt_rf_3t_pcell2461 B MINUS PLUS
+parameters segL=10u segW=2u mismod_res=1
+    R1 (PLUS MINUS B) rpposab_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+    R0 (PLUS MINUS B) rpposab_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+ends rpposab_ckt_rf_3t_pcell2461
+// End of subcircuit definition.
+
+// Library name: smic13mmrf_1233
+// Cell name: rpposab_ckt_rf_3t
+// View name: schematic
+subckt rpposab_ckt_rf_3t_pcell2462 B MINUS PLUS
+parameters segL=10u segW=2u mismod_res=1
+    R3 (PLUS MINUS B) rpposab_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+    R2 (PLUS MINUS B) rpposab_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+    R1 (PLUS MINUS B) rpposab_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+    R0 (PLUS MINUS B) rpposab_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+ends rpposab_ckt_rf_3t_pcell2462
+// End of subcircuit definition.
+
+// Library name: smic13mmrf_1233
+// Cell name: rhrpo_ckt_rf_3t
+// View name: schematic
+subckt rhrpo_ckt_rf_3t_pcell2463 B MINUS PLUS
+parameters segL=10u segW=2u mismod_res=1
+    R0 (PLUS MINUS B) rhrpo_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+ends rhrpo_ckt_rf_3t_pcell2463
+// End of subcircuit definition.
+
+// Library name: smic13mmrf_1233
+// Cell name: rhrpo_ckt_rf_3t
+// View name: schematic
+subckt rhrpo_ckt_rf_3t_pcell2464 B MINUS PLUS
+parameters segL=10u segW=2u mismod_res=1
+    R1 (n1 MINUS B) rhrpo_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+    R0 (PLUS n1 B) rhrpo_ckt_rf_3t m=1 l=segL w=segW mismod_res=mismod_res
+ends rhrpo_ckt_rf_3t_pcell2464
+// End of subcircuit definition.
+
+// Library name: smic13mmrf_1233
+// Cell name: rhrpo_ckt_rf_3t
+// View name: schematic
+subckt rhrpo_ckt_rf_3t_pcell2465 B MINUS PLUS
+parameters segL=10u segW=2u mismod_res=1
+    R2 (n2 MINUS B) rhrpo_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+    R1 (n1 n2 B) rhrpo_ckt_rf_3t m=1 l=segL w=segW mismod_res=mismod_res
+    R0 (PLUS n1 B) rhrpo_ckt_rf_3t m=1 l=segL w=segW mismod_res=mismod_res
+ends rhrpo_ckt_rf_3t_pcell2465
+// End of subcircuit definition.
+
+// Library name: RFIC
+// Cell name: LNA
+// View name: schematic
+subckt LNA GAIN_1 GAIN_0 GNDA IP IREF OUTN OUTP PD SUB VDDA
+    R6 (SUB net066 IP) rnposab_3t_ckt_pcell2460 m=1 segL=2.2u segW=1.5u \
+        mismod_res=1
+    NM4 (net7 PDn GNDA SUB) n12_mis_ckt mr=(1)*(1) w=(5u) l=130n sa=330n \
+        sb=330n as=1.65p ad=1.65p ps=10.66u pd=10.66u nrs=38m nrd=38m \
+        mismod=1
+    NM10 (net5 net7 GNDA SUB) n12_mis_ckt mr=(2)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM23 (G1n GAIN_1 GNDA SUB) n12_mis_ckt mr=(1)*(1) w=(2.5u) l=130n \
+        sa=330n sb=330n as=825f ad=825f ps=5.66u pd=5.66u nrs=76m nrd=76m \
+        mismod=1
+    NM20 (net081 G1n net0185 SUB) n12_mis_ckt mr=(1)*(1) w=(9u) l=130n \
+        sa=330n sb=330n as=2.97p ad=2.97p ps=18.66u pd=18.66u nrs=21.1111m \
+        nrd=21.1111m mismod=1
+    NM25 (G0n GAIN_0 GNDA SUB) n12_mis_ckt mr=(1)*(1) w=(2.5u) l=130n \
+        sa=330n sb=330n as=825f ad=825f ps=5.66u pd=5.66u nrs=76m nrd=76m \
+        mismod=1
+    NM22 (PDn PD GNDA SUB) n12_mis_ckt mr=(1)*(1) w=(2.5u) l=130n sa=330n \
+        sb=330n as=825f ad=825f ps=5.66u pd=5.66u nrs=76m nrd=76m mismod=1
+    NM9 (net0122 net072 net5 SUB) n12_mis_ckt mr=(2)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM19 (net079 PDn GNDA SUB) n12_mis_ckt mr=(1)*(1) w=(5u) l=130n \
+        sa=330n sb=330n as=1.65p ad=1.65p ps=10.66u pd=10.66u nrs=38m \
+        nrd=38m mismod=1
+    NM24 (net066 G0n net0185 SUB) n12_mis_ckt mr=(1)*(1) w=(9u) l=130n \
+        sa=330n sb=330n as=2.97p ad=2.97p ps=18.66u pd=18.66u nrs=21.1111m \
+        nrd=21.1111m mismod=1
+    NM12 (net073 G1n net077 SUB) n12_mis_ckt mr=(1)*(1) w=(5u) l=130n \
+        sa=330n sb=330n as=1.65p ad=1.65p ps=10.66u pd=10.66u nrs=38m \
+        nrd=38m mismod=1
+    NM15 (net073 net079 GNDA SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=130n \
+        sa=484.962n sb=484.962n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM5 (net7 net7 GNDA SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM17 (net077 net079 GNDA SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=130n \
+        sa=484.962n sb=484.962n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM6 (net072 net072 net7 SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM21 (net079 net083 net073 SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=130n \
+        sa=484.962n sb=484.962n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    PM3 (net0122 net0122 VDDA VDDA) p12_mis_ckt mr=(1)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    PM9 (G0n GAIN_0 VDDA VDDA) p12_mis_ckt mr=(1)*(1) w=(5u) l=130n \
+        sa=330n sb=330n as=1.65p ad=1.65p ps=10.66u pd=10.66u nrs=38m \
+        nrd=38m mismod=1
+    PM4 (net072 PDn IREF VDDA) p12_mis_ckt mr=(1)*(1) w=(5u) l=130n \
+        sa=330n sb=330n as=1.65p ad=1.65p ps=10.66u pd=10.66u nrs=38m \
+        nrd=38m mismod=1
+    PM7 (PDn PD VDDA VDDA) p12_mis_ckt mr=(1)*(1) w=(5u) l=130n sa=330n \
+        sb=330n as=1.65p ad=1.65p ps=10.66u pd=10.66u nrs=38m nrd=38m \
+        mismod=1
+    PM6 (net083 net0122 VDDA VDDA) p12_mis_ckt mr=(4)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    PM8 (G1n GAIN_1 VDDA VDDA) p12_mis_ckt mr=(1)*(1) w=(5u) l=130n \
+        sa=330n sb=330n as=1.65p ad=1.65p ps=10.66u pd=10.66u nrs=38m \
+        nrd=38m mismod=1
+    R4 (SUB OUTP VDDA) rpposab_ckt_rf_3t_pcell2461 m=1 segL=4u segW=2u \
+        mismod_res=1
+    R5 (SUB OUTN VDDA) rpposab_ckt_rf_3t_pcell2462 m=1 segL=4u segW=2u \
+        mismod_res=1
+    C4 (net0185 net0149) mim3_rf lr=22u wr=22u mr=1 mismod_mim_rf=1
+    C1 (GNDA net079) mim3_rf lr=11u wr=22u mr=1 mismod_mim_rf=1
+    NM11 (GNDA IP GNDA SUB) dnw12_ckt_rf lr=130n wr=5u nf=10 mr=1 \
+        sar=1.62327u sbr=1.62327u mismod=1
+    NM1 (net0149 IP GNDA SUB) dnw12_ckt_rf lr=130n wr=5u nf=10 mr=2 \
+        sar=1.62327u sbr=1.62327u mismod=1
+    NM8 (OUTP net044 net055 SUB) dnw12_ckt_rf lr=130n wr=5u nf=10 mr=1 \
+        sar=1.62327u sbr=1.62327u mismod=1
+    NM7 (net055 net0185 GNDA SUB) dnw12_ckt_rf lr=130n wr=5u nf=10 mr=1 \
+        sar=1.62327u sbr=1.62327u mismod=1
+    NM2 (OUTN net044 net0149 SUB) dnw12_ckt_rf lr=130n wr=5u nf=10 mr=2 \
+        sar=1.62327u sbr=1.62327u mismod=1
+    R17 (SUB net081 IP) rhrpo_ckt_rf_3t_pcell2463 m=1 segL=7u segW=2.3u \
+        mismod_res=1
+    R2 (SUB net044 net083) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=10u segW=2u \
+        mismod_res=1
+    R3 (SUB net083 net079) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=5u segW=2u \
+        mismod_res=1
+    R0 (SUB net0185 net079) rhrpo_ckt_rf_3t_pcell2465 m=1 segL=7u segW=2u \
+        mismod_res=1
+    R1 (SUB IP net079) rhrpo_ckt_rf_3t_pcell2465 m=1 segL=7u segW=2u \
+        mismod_res=1
+ends LNA
+// End of subcircuit definition.
+
+// Library name: smic13mmrf_1233
+// Cell name: rpposab_ckt_rf_3t
+// View name: schematic
+subckt rpposab_ckt_rf_3t_pcell2466 B MINUS PLUS
+parameters segL=10u segW=2u mismod_res=1
+    R0 (PLUS MINUS B) rpposab_ckt_rf_3t m=1 l=segL w=segW \
+        mismod_res=mismod_res
+ends rpposab_ckt_rf_3t_pcell2466
+// End of subcircuit definition.
+
+// Library name: RFIC
+// Cell name: IQ_Mixer
+// View name: schematic
+subckt IQ_Mixer GNDA IOUTN IOUTP IREF LOIN LOIP LOQN LOQP QOUTN QOUTP RFN \
+        RFP SUB VDDA
+    PM3 (net67 net67 VDDA VDDA) p12_mis_ckt mr=(1)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    PM6 (net23 net67 VDDA VDDA) p12_mis_ckt mr=(4)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM19 (net67 IREF net71 SUB) n12_mis_ckt mr=(2)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM17 (net55 net55 GNDA SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM18 (net71 net55 GNDA SUB) n12_mis_ckt mr=(2)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM20 (net51 net23 net59 SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=130n \
+        sa=484.962n sb=484.962n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM21 (net59 net51 GNDA SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=130n \
+        sa=484.962n sb=484.962n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    NM16 (IREF IREF net55 SUB) n12_mis_ckt mr=(1)*(2) w=(5u) l=1u \
+        sa=706.776n sb=706.776n as=1.65p ad=950f ps=10.66u pd=5.38u \
+        nrs=38m nrd=38m mismod=1
+    R10 (SUB LOQP net23) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=10u segW=2u \
+        mismod_res=1
+    R9 (SUB LOQN net23) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=10u segW=2u \
+        mismod_res=1
+    R8 (SUB LOIP net23) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=10u segW=2u \
+        mismod_res=1
+    R1 (SUB RFP net51) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=10u segW=2u \
+        mismod_res=1
+    R0 (SUB RFN net51) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=10u segW=2u \
+        mismod_res=1
+    R3 (SUB net23 net51) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=4u segW=2u \
+        mismod_res=1
+    R2 (SUB LOIN net23) rhrpo_ckt_rf_3t_pcell2464 m=1 segL=10u segW=2u \
+        mismod_res=1
+    NM4 (IOUTP LOIP net088 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM11 (IOUTN LOIN net088 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM14 (QOUTP LOQN net0122 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM15 (QOUTN LOQP net0122 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM12 (QOUTN LOQN net088 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM13 (QOUTP LOQP net088 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM2 (IOUTN LOIP net0122 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM7 (net088 RFN GNDA SUB) dnw12_ckt_rf lr=130n wr=5u nf=6 mr=2 \
+        sar=1.13361u sbr=1.13361u mismod=1
+    NM8 (IOUTP LOIN net0122 SUB) dnw12_ckt_rf lr=300n wr=5u nf=4 mr=2 \
+        sar=990.134n sbr=990.134n mismod=1
+    NM1 (net0122 RFP GNDA SUB) dnw12_ckt_rf lr=130n wr=5u nf=6 mr=2 \
+        sar=1.13361u sbr=1.13361u mismod=1
+    C1 (net51 GNDA) mim3_rf lr=25u wr=25u mr=1 mismod_mim_rf=1
+    R6 (SUB QOUTP VDDA) rpposab_ckt_rf_3t_pcell2466 m=1 segL=5u segW=2u \
+        mismod_res=1
+    R7 (SUB QOUTN VDDA) rpposab_ckt_rf_3t_pcell2466 m=1 segL=5u segW=2u \
+        mismod_res=1
+    R4 (SUB IOUTP VDDA) rpposab_ckt_rf_3t_pcell2466 m=1 segL=5u segW=2u \
+        mismod_res=1
+    R5 (SUB IOUTN VDDA) rpposab_ckt_rf_3t_pcell2466 m=1 segL=5u segW=2u \
+        mismod_res=1
+ends IQ_Mixer
+// End of subcircuit definition.
+
+// Library name: RFIC
+// Cell name: LNA_IQ_Mixer_testbench
+// View name: schematic
+I17 (Gain_1 Gain_0 GNDA_LNA net037 IREF_LNA net0157 net0160 PD SUB_LNA \
+        VDDA_LNA) LNA
+I33 (GNDA_MIX outp outn IREF_MIX net043 net042 net041 net040 net11 net069 \
+        net2 net047 SUB_MIX VDDA_MIX) IQ_Mixer
+I1 (net082 IREF_LNA) isource dc=10u type=dc
+I0 (net066 IREF_MIX) isource dc=10u type=dc
+C34 (net041 net073) capacitor c=2p
+C35 (net059 net0103) capacitor c=5p
+C19 (net047 net0157) capacitor c=2p
+C31 (net043 net075) capacitor c=2p
+C33 (net040 net072) capacitor c=2p
+C2 (net11 net0107) capacitor c=100p
+C1 (outn net070) capacitor c=100p
+C18 (net2 net0160) capacitor c=2p
+C0 (outp net068) capacitor c=100p
+C3 (net069 net0105) capacitor c=100p
+C32 (net042 net074) capacitor c=2p
+V14 (Gain_0 0) vsource dc=0 type=dc
+V12 (net082 0) vsource dc=1.2 type=dc
+V2 (net086 0) vsource dc=0 type=dc
+V5 (net084 0) vsource dc=1.2 type=dc
+V9 (net066 0) vsource dc=1.2 type=dc
+V15 (Gain_1 0) vsource dc=0 type=dc
+V13 (PD 0) vsource dc=1.2 type=dc
+L16 (net059 net096) inductor l=14n
+L3 (net096 net037) inductor l=1.5n r=100m
+#L10 (SUB_LNA net086) inductor l=1n r=50m
+NPORT0 ( SUB_LNA GNDA net086 GNDA) nport  \
+        file="./ind_Lc.s2p"
+L11 (GNDA_LNA net086) inductor l=1n r=50m
+V1 (VDDA_LNA net084) inductor l=2n r=100m
+L14 (SUB_MIX net086) inductor l=1n r=50m
+L13 (F_MIX net086) inductor l=1n r=50m
+L12 (VDDA_MIX net084) inductor l=2n r=100m
+PORT6 (net072 net073) port r=100 type=sine freq=2.4G ampl=200m \
+        sinephase=90
+PORT4 (net074 net075) port r=100 type=sine freq=2.4G ampl=200m sinephase=0
+PORT2 (net068 net070) port r=10K type=dc
+PORT3 (net0107 net0105) port r=10K type=dc
+PORT0 (net0103 0) port r=50 type=dc freq=frf dbm=prf pacdbm=prf pacphase=0 \
+        mag=1 fundname="rf"
+simulatorOptions options reltol=1e-3 vabstol=1e-6 iabstol=1e-12 temp=27 \
+    tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 maxnotes=5 maxwarns=5 \
+    digits=5 cols=80 pivrel=1e-3 sensfile="../psf/sens.output" \
+    checklimitdest=psf 
+//HB1 hb  fundfreqs=2.4G  maxharms=30  errpreset=moderate  tstab=50n
+//+    annotate=status separatenoise=yes
+//HBAC hbac sweeptype=relative relharmvec=[1] start=0 stop=30M values=[1M] maxsideband=30
+//HBXF (outp outn) hbxf start=1 stop=100M dec=1 values=[10k 100k 1M 10M 100M] 
+//+ maxsideband=30  
+//HBnoise (outp outn) hbnoise start=1 stop=100M dec=1 values=[10k 100k 1M 10M 100M] 
+//+ maxsideband=30
+
+modelParameter info what=models where=rawfile
+element info what=inst where=rawfile
+outputParameter info what=output where=rawfile
+designParamVals info what=parameters where=rawfile
+primitives info what=primitives where=rawfile
+subckts info what=subckts  where=rawfile
+saveOptions options save=allpub
+
+simulator lang = hspice
+.hbpss frequency=2.4G  harms=30  errpreset=moderate  tstab=50n annotate=status separatenoise=yes
+//.hbpac POI 3 0 1Meg 30Meg frequency=2.4G nharm=30 sweeptype=relative relharmnum=1 maxsideband=30
+//.hbpxf v(outp outn) DEC 1 1 100Meg frequency=2.4G nharm=30 maxsideband=30
+.hbpnoise v(outp outn) DEC 1 1 100Meg frequency=2.4G nharm=30 maxsideband=30
